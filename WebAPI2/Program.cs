@@ -1,5 +1,8 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Business.Abstract;
 using Business.Concrete;
+using Business.DependencyResolvers.AutoFac;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 
@@ -15,8 +18,15 @@ namespace WebAPI2
 
             builder.Services.AddControllers();
 
-            builder.Services.AddSingleton<IProductService,ProductManager>();
-            builder.Services.AddSingleton<IProductDal, EfProductDal>();    
+            //builder.Services.AddSingleton<IProductService,ProductManager>();
+            //builder.Services.AddSingleton<IProductDal, EfProductDal>();
+
+            builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+            builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
+            {
+                containerBuilder.RegisterModule(new AutoFacBusinessModule());
+            });
+
 
             var app = builder.Build();
 
